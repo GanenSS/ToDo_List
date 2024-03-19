@@ -1,10 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include "InputDialog.h"
+#include "listdb.h"
 #include <QMainWindow>
 #include <QtWidgets>
-#include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QSqlTableModel>
 #include <QString>
 #include <QDebug>
@@ -46,9 +45,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QSqlDatabase db;
-    QSqlQuery* query;
-    QSqlTableModel* model;
+    listDB db;
 
     QString text;
     QString txtdescription;

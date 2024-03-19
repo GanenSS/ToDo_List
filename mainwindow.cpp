@@ -7,28 +7,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //Создание базы данных task
-    db = QSqlDatabase :: addDatabase("QSQLITE");
-    db.setDatabaseName("./ListDB.db");
-    db.open();
 
-    //Создание столбцов в бд task
-    query = new QSqlQuery(db);
-    query->exec("CREATE TABLE task(Задача TEXT, Срок TEXT, Прогресс TXT, Описание TEXT);");
-
-    //Создание табличной модели QSqlTableModel для бд task
-    model = new QSqlTableModel(this, db);
-    model->setTable("task");
-    model->select();
 
     //Присвоение tableView модели
-    ui->tableView->setModel(model);
+    ui->tableView->setModel(db.model);
 
     ui->tableView->hideColumn(3);
     ui->tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 
     //Соеденение для валидации строк в бд task
-    connect(model, &QSqlTableModel::dataChanged, this, &MainWindow::on_tableView_DataChanged);
+    connect(db.model, &QSqlTableModel::dataChanged, this, &MainWindow::on_tableView_DataChanged);
 }
 
 MainWindow::~MainWindow()
@@ -39,31 +27,31 @@ MainWindow::~MainWindow()
 void MainWindow::on_m_pcmdAdd_clicked()
 {
     //Добовление строки
-    int row = model->rowCount();
-    model->insertRow(row);
+    int row = db.model->rowCount();
+    db.model->insertRow(row);
 
     //Присвоение в столбцы текста
-    QModelIndex index = model->index(row, 2);
-    model->setData(index, "В процессе");
-    index = model->index(row, 0);
-    model->setData(index, "Впишите задачу");
-    index = model->index(row, 3);
-    model->setData(index, "Напишите описание задачи");
-    model->submitAll();
+    QModelIndex index = db.model->index(row, 2);
+    db.model->setData(index, "В процессе");
+    index = db.model->index(row, 0);
+    db.model->setData(index, "Впишите задачу");
+    index = db.model->index(row, 3);
+    db.model->setData(index, "Напишите описание задачи");
+    db.model->submitAll();
 }
 
 //Удаление строки
 void MainWindow::on_m_cmdRemove_clicked()
 {
-    model->removeRow(rowID);
+    db.model->removeRow(rowID);
 }
 
 void MainWindow::on_m_pcmdAccept_clicked()
 {
     int row = ui->tableView->currentIndex().row(); // Получаем индекс текущей строки
-    QModelIndex index = model->index(row, 2); // Индекс поля Прогресс
-    model->setData(index, "ВЫПОЛНЕНО"); // Устанавливаем значение ВЫПОЛНЕНО
-    model->submitAll();
+    QModelIndex index = db.model->index(row, 2); // Индекс поля Прогресс
+    db.model->setData(index, "ВЫПОЛНЕНО"); // Устанавливаем значение ВЫПОЛНЕНО
+    db.model->submitAll();
 }
 
 void MainWindow::on_tableView_clicked(const QModelIndex &index)
@@ -75,7 +63,7 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index)
 
 void MainWindow::on_tableView_DataChanged(const QModelIndex &index)
 {
-    QString text = model->data(index).toString(); // Получаем текст из ячейки
+    QString text = db.model->data(index).toString(); // Получаем текст из ячейки
 
     int pos = 0;
 
@@ -84,7 +72,7 @@ void MainWindow::on_tableView_DataChanged(const QModelIndex &index)
     const QRegularExpressionValidator validator(regLanguage);
     if (index.column() == 0 && validator.validate(text, pos) != QValidator::Acceptable)
     {
-        model->setData(index, QVariant("Впишите задачу")); // Очищаем ячейку, если текст не на русском
+        db.model->setData(index, QVariant("Впишите задачу")); // Очищаем ячейку, если текст не на русском
         //Сообщение о причине очищения строки
         QMessageBox::information(0,
                                  "Information",
@@ -96,7 +84,7 @@ void MainWindow::on_tableView_DataChanged(const QModelIndex &index)
     const QRegularExpressionValidator dateValidator(regDate);
     if (index.column() == 1 && dateValidator.validate(text, pos) == QValidator::Invalid)
     {
-        model->setData(index, QVariant("")); // Очищаем ячейку, если дата не соответствует формату
+        db.model->setData(index, QVariant("")); // Очищаем ячейку, если дата не соответствует формату
         //Сообщение о причине очищения строки
         QMessageBox::information(0,
                                  "Information",
@@ -110,7 +98,7 @@ void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
     InputDialog* pInputDialog = new InputDialog;
 
     //Присвоение "Описание" из бд в TextEdit в диалоговом окне
-    pInputDialog->txtDataChanged(model->data(model->index(rowID, 3)).toString());
+    pInputDialog->txtDataChanged(db.model->data(db.model->index(rowID, 3)).toString());
 
     // Проверяем, что текст содержит только русские символы, цифры или пустоту
     QRegularExpression regLanguage("^[А-Яа-я0-9\\s]*$");
@@ -137,7 +125,7 @@ void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
         {
             //Присвоение написанного текста в бд
             txtdescription = pInputDialog->discription();
-            model->setData(model->index(rowID, 3), txtdescription);
+            db.model->setData(db.model->index(rowID, 3), txtdescription);
 
             delete pInputDialog;
         }
