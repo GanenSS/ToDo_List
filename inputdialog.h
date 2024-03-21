@@ -10,16 +10,16 @@ class InputDialog : public QDialog
 {
     Q_OBJECT
 private:
-    QTextEdit* m_ptxtDiscription;
+    QTextEdit* descriptionEdit;
 
 public:
     InputDialog(QWidget* pwgt = 0);
 
-    QString discription() const;
+    QString getDescription() const;
 
-    void disc0();
+    void descClear();
 
-    void txtDataChanged(const QString &str);
+    void setDescription(const QString &str);
 
 };
 

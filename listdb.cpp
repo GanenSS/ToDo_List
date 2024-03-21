@@ -1,9 +1,5 @@
 #include "listdb.h"
 
-QString const dbType = "QSQLITE";
-QString const dbName = "./ListDB.db";
-QString const dbTable = "CREATE TABLE task(Задача TEXT, Срок TEXT, Прогресс TXT, Описание TEXT);";
-QString const dbTableName = "task";
 
 listDB::listDB(QObject *parent)
     : QObject{parent}
@@ -32,7 +28,6 @@ listDB::listDB(QObject *parent)
         {
             qWarning() << "Не удалось открыть базу данных";
         }
-
     }
 
     //Создание столбцов в бд task
@@ -43,4 +38,12 @@ listDB::listDB(QObject *parent)
     model = new QSqlTableModel(this, db);
     model->setTable(dbTableName);
     model->select();
+
+
+}
+listDB::~listDB()
+{
+    db.close();
+    delete query;
+    delete model;
 }

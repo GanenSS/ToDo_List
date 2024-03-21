@@ -4,7 +4,6 @@
 #include "listdb.h"
 #include <QMainWindow>
 #include <QtWidgets>
-#include <QSqlTableModel>
 #include <QString>
 #include <QDebug>
 #include <QRegularExpression>
@@ -30,17 +29,12 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_m_pcmdAdd_clicked();
-
-    void on_m_cmdRemove_clicked();
-
-    void on_tableView_clicked(const QModelIndex &index);
-
-    void on_m_pcmdAccept_clicked();
-
-    void on_tableView_DataChanged(const QModelIndex &index);
-
-    void on_tableView_doubleClicked(const QModelIndex &index);
+    void clickedAddButton();
+    void clickedRemoveButon();
+    void clickedTable(const QModelIndex &index);
+    void clickedAcceptButton();
+    void tableDataChanged(const QModelIndex &index);
+    void doubleClickedTable(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;
@@ -48,12 +42,17 @@ private:
     listDB db;
 
     QString text;
-    QString txtdescription;
+
+    const QString errorLanguageMsg = "Текст должен быть на русском языке";
+    const QString errorDateMsg = "Дата должна быть формата: дд.мм.гггг";
+    const QString defaultMsg = "Впишите задачу";
+
+    int const taskColumn        = 0;
+    int const dateColumn        = 1;
+    int const progresColumn     = 2;
+    int const descriptionColumn = 3;
 
     int rowID;
-    int colum;
-    int pos;
-
 };
 
 

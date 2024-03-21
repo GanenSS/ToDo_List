@@ -4,46 +4,47 @@ InputDialog::InputDialog(QWidget* pwgt/* = 0*/)
     :QDialog(pwgt, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
     //Создание виджетов
-    m_ptxtDiscription = new QTextEdit;
+    descriptionEdit = new QTextEdit;
 
-    QLabel* plblDiscription = new QLabel("Описание");
+    QLabel* descriptionLable = new QLabel("Описание");
 
-    plblDiscription->setBuddy(m_ptxtDiscription);
+    descriptionLable->setBuddy(descriptionEdit);
 
-    QPushButton* m_pcmdSave = new QPushButton("Сохранить");
-    QPushButton* m_pcmdCancel = new QPushButton("Отмена");
+    QPushButton* saveButton = new QPushButton("Сохранить");
+    QPushButton* cancelButton = new QPushButton("Отмена");
 
     //Соединение кнопок
-    connect(m_pcmdSave, SIGNAL(clicked(bool)), SLOT(accept()));
-    connect(m_pcmdCancel, SIGNAL(clicked(bool)), SLOT(accept()));
+    connect(saveButton, SIGNAL(clicked(bool)), SLOT(accept()));
+    connect(cancelButton, SIGNAL(clicked(bool)), SLOT(accept()));
 
     //Групировка виджетов
-    QVBoxLayout* pvbxLayout = new QVBoxLayout;
-    QHBoxLayout* phbxLayout = new QHBoxLayout;
-    pvbxLayout->addWidget(plblDiscription);
-    pvbxLayout->addWidget(m_ptxtDiscription);
+    QVBoxLayout* verticalLayout = new QVBoxLayout;
+    QHBoxLayout* horizontLayout = new QHBoxLayout;
+    verticalLayout->addWidget(descriptionLable);
+    verticalLayout->addWidget(descriptionEdit);
 
-    phbxLayout->addWidget(m_pcmdSave);
-    phbxLayout->addWidget(m_pcmdCancel);
+    horizontLayout->addWidget(saveButton);
+    horizontLayout->addWidget(cancelButton);
 
-    pvbxLayout->addLayout(phbxLayout);
-    setLayout(pvbxLayout);
+    verticalLayout->addLayout(horizontLayout);
+    setLayout(verticalLayout);
 }
 
 //Возвращение строки
-QString InputDialog::discription() const
+QString InputDialog::getDescription() const
 {
-    return m_ptxtDiscription->toPlainText();
+    return descriptionEdit->toPlainText();
+}
+
+//Присвоение строки из бд в descriptionEdit
+void InputDialog::setDescription(const QString &str)
+{
+    descriptionEdit->setText(str);
 }
 
 //Очищение строки
-void InputDialog::disc0()
+void InputDialog::descClear()
 {
-    m_ptxtDiscription->setText("");
+    descriptionEdit->setText("");
 }
 
-//Присвоение строки из бд в m
-void InputDialog::txtDataChanged(const QString &str)
-{
-    m_ptxtDiscription->setText(str);
-}
