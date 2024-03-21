@@ -20,7 +20,7 @@ listDB::listDB(QObject *parent)
     }
     else
     {
-        qDebug() << "База данных уже существует. Открыте существующей";
+        qDebug() << "База данных уже существует. Открытие существующей";
         db = QSqlDatabase :: addDatabase(dbType);
         db.setDatabaseName(dbName);
 
