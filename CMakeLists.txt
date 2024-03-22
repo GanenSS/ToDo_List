@@ -12,23 +12,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(SQLite::SQLite3)
+find_package (SQLite3)
 find_package(Qt6 REQUIRED COMPONENTS Sql)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        inputdialog.cpp
-        inputdialog.h
-        mainwindow.ui
+        src/mainSGS/main.cpp
+        src/mainSGS/mainwindow.cpp
+        src/widgets/inputdialog.cpp
+        src/mainSGS/mainwindow.ui
+        src/db/listdb.cpp
 )
+
+include_directories(src/widgets)
+include_directories(src/db)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ToDo_List
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        listdb.h listdb.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET ToDo_List APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -77,7 +78,7 @@ endif()
 
 if(QSLite3_FOUND)
     include_directories(${SQLITE_INCLUDE_DIRS})
-    target_link_libraries(ToDo_List, ${SQLITE3_LIBRARIES})
+    target_link_libraries(${OUT_TARGET} ${SQLITE3_LIBRARIES})
 endif(QSLite3_FOUND)
 
 target_link_libraries(ToDo_List PRIVATE Qt6::Sql)
