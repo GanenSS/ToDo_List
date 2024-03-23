@@ -18,9 +18,12 @@ find_package(Qt6 REQUIRED COMPONENTS Sql)
 set(PROJECT_SOURCES
         src/mainSGS/main.cpp
         src/mainSGS/mainwindow.cpp
+        src/mainSGS/mainwindow.h
         src/widgets/inputdialog.cpp
+        src/widgets/InputDialog.h
         src/mainSGS/mainwindow.ui
         src/db/listdb.cpp
+        src/db/listdb.h
 )
 
 include_directories(src/widgets)
