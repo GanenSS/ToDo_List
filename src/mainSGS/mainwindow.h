@@ -1,18 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include "InputDialog.h"
 #include "listdb.h"
+#include "workingwidget.h"
+#include "styles.h"
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QString>
 #include <QDebug>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
-#include <QMouseEvent>
-
-
-
-
+#include <QPainter>
+#include <QStyleOption>
+// #include <QScrollArea>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,24 +27,46 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void paintEvent(QPaintEvent *event);
 private slots:
+    void setInterfaceStyle();
     void clickedAddButton();
     void clickedRemoveButon();
-    void clickedTable(const QModelIndex &index);
-    void clickedAcceptButton();
-    void tableDataChanged(const QModelIndex &index);
-    void doubleClickedTable(const QModelIndex &index);
+
+    void clickedCompletedButton(const int id);
+    void clickedNotCompletedButton(const int id);
+
+    void updateIndex(const int startIndex);
+
+    void taskChenged(const int id);
+    void dateChenged(const int id);
+
+    void starting();
+    void validateData(int rowID, QString text);
+    void descriptionDialog(const int id);
 
 private:
     Ui::MainWindow *ui;
 
-    listDB db;
+    listDB *db = new listDB;
+    WorkingWidget *WW;
 
-    QString text;
+    // QScrollArea *scrollArea;
 
-    const QString errorLanguageMsg = "Текст должен быть на русском языке";
-    const QString errorDateMsg = "Дата должна быть формата: дд.мм.гггг";
-    const QString defaultMsg = "Впишите задачу";
+    QVBoxLayout *verticalLayout = new QVBoxLayout;
+    QSpacerItem* spacer         = new QSpacerItem(0, 20, QSizePolicy::Fixed, QSizePolicy::Expanding);
+
+    const int ID = 0;
+    const QString errorRowMsg             = "Впишите вашу задачу";
+    const QString errorLanguageMsg        = "Текст должен быть на русском языке";
+    const QString errorDateMsg            = "Дата должна быть формата: дд.мм.гггг";
+    const QString defaultTaskMsg          = "Впишите задачу";
+    const QString defaultDateMsg          = "дд.мм.гггг";
+
+    const QString progresCompletedText    = "ВЫПОЛНЕНО";
+    const QString progresNotCompletedText = "НЕ ВЫПОЛНЕНО";
+    const QString progresNormalText       = "В процессе";
 
     int const taskColumn        = 0;
     int const dateColumn        = 1;
@@ -53,6 +74,9 @@ private:
     int const descriptionColumn = 3;
 
     int rowID;
+
+    QVector<WorkingWidget*> widgetList;
+
 };
 
 

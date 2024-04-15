@@ -3,23 +3,37 @@
 
 #include <QDialog>
 #include <QtWidgets>
+#include <styles.h>
+
 
 class QTextEdit;
 
 class InputDialog : public QDialog
 {
     Q_OBJECT
-private:
-    QTextEdit* descriptionEdit;
-
 public:
     InputDialog(QWidget* pwgt = 0);
+    ~InputDialog();
 
-    QString getDescription() const;
+public slots:
+    QString getDescription();
 
-    void descClear();
+    void descriptionClear();
 
     void setDescription(const QString &str);
+
+    void clickedDescriptionEdit();
+
+    void setInterfaceStyle();
+private:
+    QLabel      *descriptionLable;
+    QTextEdit   *descriptionEdit;
+    QPushButton *saveButton;
+    QPushButton *cancelButton;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontLayout;
+
+    const QString descriptionText = "Напишите описание задачи";
 
 };
 

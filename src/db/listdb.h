@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlTableModel>
+#include <QSqlError>
 #include <QFile>
 #include <QDebug>
 
@@ -16,18 +17,27 @@ public:
     explicit listDB(QObject *parent = nullptr);
     ~listDB();
 
-    QSqlDatabase db;
-    QSqlQuery *query;
-    QSqlTableModel *model;
+    QSqlDatabase    db;
+    QSqlQuery       *query;
+    QSqlTableModel  *model;
+
+public slots:
+    void    addRow();
+    void    removeRow(const int rowID);
+    int     getRowIDdb();
+    QString getData(int rowID, int column);
+
 private:
-    QString const dbType = "QSQLITE";
-    QString const dbName = "./ListDB.db";
-    QString const dbTable = "CREATE TABLE task(Задача TEXT, Срок TEXT, Прогресс TXT, Описание TEXT);";
-    QString const dbTableName = "task";
+    const QString dbType        = "QSQLITE";
+    const QString dbName        = "./ListDB.db";
+    const QString dbTable       = "CREATE TABLE task(Task TEXT, Date TEXT, Progres TEXT, Descriptin TEXT);";
+    const QString dbTableName   = "task";
 
-    //MainWindow mainWind;
+    const int taskColumn        = 0;
+    const int dateColumn        = 1;
+    const int progresColumn     = 2;
+    const int descriptionColumn = 3;
 
-signals:
 };
 
 #endif // LISTDB_H

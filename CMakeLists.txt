@@ -19,15 +19,22 @@ set(PROJECT_SOURCES
         src/mainSGS/main.cpp
         src/mainSGS/mainwindow.cpp
         src/mainSGS/mainwindow.h
+        src/mainSGS/mainwindow.ui
         src/widgets/inputdialog.cpp
         src/widgets/InputDialog.h
-        src/mainSGS/mainwindow.ui
+        src/widgets/workingwidget.cpp
+        src/widgets/workingwidget.h
+        src/widgets/workingwidget.ui
         src/db/listdb.cpp
         src/db/listdb.h
+        src/styleHelper/styles.cpp
+        src/styleHelper/styles.h
+        Assets.qrc
 )
 
 include_directories(src/widgets)
 include_directories(src/db)
+include_directories(src/styleHelper)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ToDo_List
