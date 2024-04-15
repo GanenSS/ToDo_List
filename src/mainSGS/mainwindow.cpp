@@ -9,9 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // scrollArea = new QScrollArea(ui->widget);
-
-    ui->scrollArea->setLayout(verticalLayout);
+    ui->widget->setLayout(verticalLayout);
     verticalLayout->addSpacerItem(spacer);
     verticalLayout->setSpacing(10);
     verticalLayout->setContentsMargins(43, 10, 15, 10);
@@ -25,8 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QFontDatabase::addApplicationFont(":/src/resourses/fonts/Roboto-Medium.ttf");
 
-    // scrollArea->setGeometry(11, 27, 779, 500);
-    // scrollArea->setLayout(verticalLayout);
 }
 
 MainWindow::~MainWindow()

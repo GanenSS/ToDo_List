@@ -11,7 +11,6 @@
 #include <QRegularExpressionValidator>
 #include <QPainter>
 #include <QStyleOption>
-// #include <QScrollArea>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
