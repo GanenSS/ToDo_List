@@ -52,8 +52,8 @@ void MainWindow::clickedAddButton()
 {
     QModelIndex index = db->model->index(db->model->rowCount()-1, taskColumn);
 
-    // if(db->model->rowCount()-1 != 7)
-    // {
+    if(db->model->rowCount()-1 <= 7)
+    {
         if(db->model->data(index) != defaultTaskMsg)
         {
             verticalLayout->removeItem(spacer);
@@ -85,7 +85,11 @@ void MainWindow::clickedAddButton()
         {
             QMessageBox::information(this, "Information", errorRowMsg);
         }
-    // }
+    }
+    else
+    {
+        QMessageBox::information(this, "Information", "Вам пока задач хватит");
+    }
 }
 
 //Удаление строки
