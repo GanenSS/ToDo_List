@@ -4,8 +4,6 @@
 #include "workingwidget.h"
 #include "styles.h"
 #include <QMainWindow>
-#include <QtWidgets>
-#include <QString>
 #include <QDebug>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
@@ -41,6 +39,8 @@ private slots:
     void taskChenged(const int id);
     void dateChenged(const int id);
 
+    void addWorkingWidget(int id);
+    int  addRowInDataBase();
     void starting();
     void validateData(int rowID, QString text);
     void descriptionDialog(const int id);
@@ -48,15 +48,12 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    listDB *db = new listDB;
-    WorkingWidget *WW;
-
-    // QScrollArea *scrollArea;
+    listDB *dataBase = new listDB;
+    WorkingWidget *workingWidget;
 
     QVBoxLayout *verticalLayout = new QVBoxLayout;
     QSpacerItem* spacer         = new QSpacerItem(0, 20, QSizePolicy::Fixed, QSizePolicy::Expanding);
 
-    const int ID = 0;
     const QString errorRowMsg             = "Впишите вашу задачу";
     const QString errorLanguageMsg        = "Текст должен быть на русском языке";
     const QString errorDateMsg            = "Дата должна быть формата: дд.мм.гггг";

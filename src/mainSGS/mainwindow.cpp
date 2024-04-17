@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->widget->setLayout(verticalLayout);
+    ui->scrollAreaWidgetContents->setLayout(verticalLayout);
     verticalLayout->addSpacerItem(spacer);
     verticalLayout->setSpacing(10);
     verticalLayout->setContentsMargins(43, 10, 15, 10);
@@ -50,45 +50,15 @@ void MainWindow::setInterfaceStyle()
 
 void MainWindow::clickedAddButton()
 {
-    QModelIndex index = db->model->index(db->model->rowCount()-1, taskColumn);
+    QModelIndex index = dataBase->model->index(dataBase->model->rowCount()-1, taskColumn);
 
-    if(db->model->rowCount()-1 <= 7)
+    if(dataBase->model->data(index) != defaultTaskMsg)
     {
-        if(db->model->data(index) != defaultTaskMsg)
-        {
-            verticalLayout->removeItem(spacer);
-
-            db->addRow();
-            rowID = db->getRowIDdb();
-
-            WW = new WorkingWidget(this);
-            WW->setRowIDww(rowID);
-
-            WW->setTaskData(db->getData(rowID, taskColumn));
-            WW->setDateData(db->getData(rowID, dateColumn));
-
-            widgetList.push_back(WW);
-
-            verticalLayout->addWidget(WW);
-            verticalLayout->addSpacerItem(spacer);
-            verticalLayout->update();
-
-            db->model->submitAll();
-
-            connect(WW, &WorkingWidget::clickedCompletedButtonSignal,    this, &MainWindow::clickedCompletedButton);
-            connect(WW, &WorkingWidget::clickedNotCompletedButtonSignal, this, &MainWindow::clickedNotCompletedButton);
-            connect(WW, &WorkingWidget::taskChangedSignal,               this, &MainWindow::taskChenged);
-            connect(WW, &WorkingWidget::dateChangedSignal,               this, &MainWindow::dateChenged);
-            connect(WW, &WorkingWidget::clickedDescriptionButtonSignal,  this, &MainWindow::descriptionDialog);
-        }
-        else
-        {
-            QMessageBox::information(this, "Information", errorRowMsg);
-        }
+        addWorkingWidget(addRowInDataBase());
     }
     else
     {
-        QMessageBox::information(this, "Information", "Вам пока задач хватит");
+        QMessageBox::information(this, "Information", errorRowMsg);
     }
 }
 
@@ -100,7 +70,7 @@ void MainWindow::clickedRemoveButon()
         if(widgetList[i]->checkChekBox())
         {
             rowID = widgetList[i]->getRowIDww();
-            db->removeRow(rowID);
+            dataBase->removeRow(rowID);
             delete widgetList[i];
             widgetList.remove(i);
             updateIndex(rowID);
@@ -110,36 +80,36 @@ void MainWindow::clickedRemoveButon()
 
 void MainWindow::clickedCompletedButton(const int id)
 {
-    QModelIndex index = db->model->index(id, progresColumn);
+    QModelIndex index = dataBase->model->index(id, progresColumn);
 
-    if(db->model->data(index) == progresNormalText | db->model->data(index) == progresNotCompletedText)
+    if(dataBase->model->data(index) == progresNormalText | dataBase->model->data(index) == progresNotCompletedText)
     {
-        db->model->setData(index, progresCompletedText);
+        dataBase->model->setData(index, progresCompletedText);
     }
-    else if(db->model->data(index) == progresCompletedText)
+    else if(dataBase->model->data(index) == progresCompletedText)
     {
-        db->model->setData(index, progresNormalText);
+        dataBase->model->setData(index, progresNormalText);
         widgetList[id]->setNormalWidgetStyle();
     }
 
-    db->model->submitAll();
+    dataBase->model->submitAll();
 }
 
 void MainWindow::clickedNotCompletedButton(const int id)
 {
-    QModelIndex index = db->model->index(id, progresColumn);
+    QModelIndex index = dataBase->model->index(id, progresColumn);
 
-    if(db->model->data(index) == progresNormalText | db->model->data(index) == progresCompletedText)
+    if(dataBase->model->data(index) == progresNormalText | dataBase->model->data(index) == progresCompletedText)
     {
-        db->model->setData(index, progresNotCompletedText);
+        dataBase->model->setData(index, progresNotCompletedText);
     }
-    else if(db->model->data(index) == progresNotCompletedText)
+    else if(dataBase->model->data(index) == progresNotCompletedText)
     {
-        db->model->setData(index, progresNormalText);
+        dataBase->model->setData(index, progresNormalText);
         widgetList[id]->setNormalWidgetStyle();
     }
 
-    db->model->submitAll();
+    dataBase->model->submitAll();
 }
 
 void MainWindow::updateIndex(const int startIndex)
@@ -154,56 +124,76 @@ void MainWindow::taskChenged(const int id)
 {
     validateData(id, widgetList[id]->getTaskData());
 
-    QModelIndex index = db->model->index(id, taskColumn);
-    db->model->setData(index, widgetList[id]->getTaskData());
+    QModelIndex index = dataBase->model->index(id, taskColumn);
+    dataBase->model->setData(index, widgetList[id]->getTaskData());
 
-    db->model->submitAll();
+    dataBase->model->submitAll();
 }
 
 void MainWindow::dateChenged(const int id)
 {
     validateData(id, widgetList[id]->getDateData());
 
-    QModelIndex index = db->model->index(id, dateColumn);
-    db->model->setData(index, widgetList[id]->getDateData());
+    QModelIndex index = dataBase->model->index(id, dateColumn);
+    dataBase->model->setData(index, widgetList[id]->getDateData());
 
-    db->model->submitAll();
+    dataBase->model->submitAll();
+}
+
+void MainWindow::addWorkingWidget(int id)
+{
+    verticalLayout->removeItem(spacer);
+
+    rowID = id;
+
+    workingWidget = new WorkingWidget(this);
+    workingWidget->setRowIDww(rowID);
+
+    workingWidget->setTaskData(dataBase->getData(rowID, taskColumn));
+    workingWidget->setDateData(dataBase->getData(rowID, dateColumn));
+
+    widgetList.push_back(workingWidget);
+
+    verticalLayout->addWidget(workingWidget);
+    verticalLayout->addSpacerItem(spacer);
+    verticalLayout->update();
+
+    dataBase->model->submitAll();
+
+    connect(workingWidget, &WorkingWidget::clickedCompletedButtonSignal,    this, &MainWindow::clickedCompletedButton);
+    connect(workingWidget, &WorkingWidget::clickedNotCompletedButtonSignal, this, &MainWindow::clickedNotCompletedButton);
+    connect(workingWidget, &WorkingWidget::taskChangedSignal,               this, &MainWindow::taskChenged);
+    connect(workingWidget, &WorkingWidget::dateChangedSignal,               this, &MainWindow::dateChenged);
+    connect(workingWidget, &WorkingWidget::clickedDescriptionButtonSignal,  this, &MainWindow::descriptionDialog);
+
+    if(dataBase->model->rowCount()-1 == 8)
+    {
+        ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
+}
+
+int MainWindow::addRowInDataBase()
+{
+    dataBase->addRow();
+    return rowID = dataBase->getRowIDdb();
 }
 
 void MainWindow::starting()
 {
     QModelIndex index;
 
-    if(db->model->rowCount() > 0)
+    if(dataBase->model->rowCount() > 0)
     {
-        for (int i = 0; i < db->model->rowCount(); ++i)
+        for (int i = 0; i < dataBase->model->rowCount(); ++i)
         {
-            verticalLayout->removeItem(spacer);
+            addWorkingWidget(i);
 
-            WW = new WorkingWidget;
-            WW->setInterfaceStyle();
-            WW->setRowIDww(i);
-            widgetList.push_back(WW);
-
-            WW->setTaskData(db->getData(i, taskColumn));
-            WW->setDateData(db->getData(i, dateColumn));
-
-            verticalLayout->addWidget(WW);
-            verticalLayout->addSpacerItem(spacer);
-            verticalLayout->update();
-
-            connect(WW, &WorkingWidget::clickedCompletedButtonSignal,    this, &MainWindow::clickedCompletedButton);
-            connect(WW, &WorkingWidget::clickedNotCompletedButtonSignal, this, &MainWindow::clickedNotCompletedButton);
-            connect(WW, &WorkingWidget::taskChangedSignal,               this, &MainWindow::taskChenged);
-            connect(WW, &WorkingWidget::dateChangedSignal,               this, &MainWindow::dateChenged);
-            connect(WW, &WorkingWidget::clickedDescriptionButtonSignal,  this, &MainWindow::descriptionDialog);
-
-            index = db->model->index(i, progresColumn);
-            if(db->model->data(index) == progresCompletedText)
+            index = dataBase->model->index(i, progresColumn);
+            if(dataBase->model->data(index) == progresCompletedText)
             {
                 widgetList[i]->clickedCompletedButton();
             }
-            else if(db->model->data(index) == progresNotCompletedText)
+            else if(dataBase->model->data(index) == progresNotCompletedText)
             {
                 widgetList[i]->clickedNotCompletedButton();
             }
@@ -231,10 +221,10 @@ void MainWindow::validateData(int rowID, QString text)
 void MainWindow::descriptionDialog(const int id)
 {
     InputDialog* pInputDialog = new InputDialog;
-    QModelIndex index = db->model->index(id, descriptionColumn);
+    QModelIndex index = dataBase->model->index(id, descriptionColumn);
 
     //Присвоение "Описание" из бд в TextEdit в диалоговом окне
-    pInputDialog->setDescription(db->model->data(index).toString());
+    pInputDialog->setDescription(dataBase->model->data(index).toString());
 
     // Проверяем, что текст содержит только русские символы, цифры или пустоту
     static QRegularExpression regLanguage("^[А-Яа-я0-9\\s,.-]*$");
@@ -257,8 +247,8 @@ void MainWindow::descriptionDialog(const int id)
         else
         {
             //Присвоение написанного текста в бд
-            db->model->setData(index, text);
-            db->model->submitAll();
+            dataBase->model->setData(index, text);
+            dataBase->model->submitAll();
 
             delete pInputDialog;
         }
